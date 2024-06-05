@@ -25,8 +25,6 @@ export class AppComponent implements OnInit, OnDestroy {
     }
   }
 
-
-
   ngOnDestroy(): void {
     this.worker?.terminate();
   }
