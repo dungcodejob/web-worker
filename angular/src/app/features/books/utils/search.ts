@@ -6,6 +6,7 @@ import {
   observeOn,
   scan,
   startWith,
+  tap,
 } from 'rxjs';
 import {
   FuzzyMatchSimilarity,
@@ -34,9 +35,9 @@ export interface SearchMatch {
 
 export function getAccumulatedSearchResults(
   searchTerm: string,
-  bookText: string
+  paragraphs: string[]
 ): Observable<SearchResult> {
-  const paragraphs = bookText.split('\n\n');
+  console.log(searchTerm);
   return getSearchResults(searchTerm, paragraphs).pipe(
     accumulateResults(paragraphs.length)
   );
@@ -53,9 +54,8 @@ export function accumulateResults(paragraphCount: number) {
         []
       ),
       startWith([]),
+      tap((searchResults) => console.log(searchResults)),
       map((searchMatches: SearchMatch[], index): SearchResult => {
-        if (searchMatches.length !== paragraphCount) {
-        }
         const last = searchMatches[searchMatches.length - 1];
         return {
           searchedParagraphCount: last ? last.paragraphNumber + 1 : 0,
@@ -87,7 +87,6 @@ export function getSearchResults(
   searchTerm: string,
   paragraphs: string[]
 ): Observable<SearchMatch> {
-  let count = 0;
   return from(paragraphs).pipe(
     observeOn(asyncScheduler),
     map((paragraph, index) => {

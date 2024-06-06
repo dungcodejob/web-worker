@@ -1,21 +1,21 @@
 import { AsyncPipe } from '@angular/common';
-import { Component, DestroyRef, OnInit, inject, output } from '@angular/core';
+import { Component, DestroyRef, inject, output } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { provideComponentStore } from '@ngrx/component-store';
 import { distinctUntilChanged, filter } from 'rxjs';
 import { isNotNil } from '../../../../shared/utils';
 import { BookFilter, BookSearchForm } from '../../models';
-import { BookSearchFacade } from './book-search.facade';
+import { BookSearchFacade } from '../book-search/book-search.facade';
+import { BookSearchWorkerFacade } from './book-search-worker.facade';
 
 @Component({
-  selector: 'app-book-search',
+  selector: 'app-book-search-worker',
   standalone: true,
   imports: [AsyncPipe, ReactiveFormsModule],
-  templateUrl: './book-search.component.html',
-  styleUrl: './book-search.component.css',
-  providers: [provideComponentStore(BookSearchFacade)],
+  templateUrl: './book-search-worker.component.html',
+  styleUrl: './book-search-worker.component.css',
+  providers: [{ provide: BookSearchFacade, useClass: BookSearchWorkerFacade }],
 })
-export class BookSearchComponent implements OnInit {
+export class BookSearchWorkerComponent {
   private readonly fb = inject(NonNullableFormBuilder);
   private readonly destroyRef = inject(DestroyRef);
   private readonly facade = inject(BookSearchFacade);

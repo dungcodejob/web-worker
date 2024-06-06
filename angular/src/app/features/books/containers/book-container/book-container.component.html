@@ -1,17 +1,5 @@
-<app-book-search (filter)="onFilter($event)"></app-book-search>
+<div style="display: flex">
+  <app-book-search style="width: 50%"></app-book-search>
 
-@if (vm$ | async; as vm) {
-<span>
-  <span>{{ vm.searchedParagraphCount }} / {{ vm.paragraphCount }}</span>
-  <span>({{ vm.progress }})</span>
-</span>
-
-@for (item of vm.paragraphs; track $index) {
-<hr />
-<blockquote>
-  <span>{{ item.before }}</span>
-  <strong>{{ item.match }}</strong>
-  <span>{{ item.after }}</span>
-  <footer>Score: {{ item.score }}</footer>
-</blockquote>
-} }
+  <app-book-search-worker style="width: 50%"></app-book-search-worker>
+</div>

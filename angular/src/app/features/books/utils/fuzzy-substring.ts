@@ -51,37 +51,43 @@ export function fuzzySubstring(needle: string, haystack: string): FuzzyMatch {
     };
   }
 
-  let row1: number[] = (new Array(haystack.length + 1) as any).fill(0);
+  let minDistance = Infinity;
+  let bestStartIndex = 0;
 
-  for (let i = 0; i < needle.length; i++) {
-    const row2 = [i + 1];
+  // Iterate over possible start positions of the needle within the haystack
+  for (let start = 0; start <= haystack.length - needle.length; start++) {
+    let row1: number[] = new Array(needle.length + 1)
+      .fill(0)
+      .map((_, idx) => idx);
 
-    for (let j = 0; j < haystack.length; j++) {
-      const cost = needle[i] != haystack[j] ? 1 : 0;
+    for (let i = 0; i < needle.length; i++) {
+      const row2: number[] = [i + 1];
 
-      row2.push(
-        Math.min(
-          row1[j + 1] + 1, // deletion
-          row2[j] + 1, // insertion
-          row1[j] + cost // substitution
-        )
-      );
+      for (let j = 0; j < needle.length; j++) {
+        const cost = needle[i] !== haystack[start + j] ? 1 : 0;
+
+        row2.push(
+          Math.min(
+            row1[j + 1] + 1, // deletion
+            row2[j] + 1, // insertion
+            row1[j] + cost // substitution
+          )
+        );
+      }
+
+      row1 = row2;
     }
 
-    row1 = row2;
+    const distance = row1[needle.length];
+    if (distance < minDistance) {
+      minDistance = distance;
+      bestStartIndex = start;
+    }
   }
-
-  let minDistance = row1[0];
-  for (let i = 0; i < row1.length; i++) {
-    minDistance = Math.min(minDistance, row1[i]);
-  }
-
-  const minIndex = row1.lastIndexOf(minDistance);
 
   return {
     substringDistance: minDistance,
-    // @todo resolve how to get the substring reliably this is close but inaccurate
-    startIndex: minIndex - needle.length,
-    endIndex: minIndex,
+    startIndex: bestStartIndex,
+    endIndex: bestStartIndex + needle.length,
   };
 }
